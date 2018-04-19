@@ -1,7 +1,9 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use DB;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class EmpresariosController extends Controller
@@ -36,7 +38,23 @@ class EmpresariosController extends Controller
      */
     public function store(Request $request)
     {
-        //
+       DB::table('empresarios')->insert([
+         "codigo" => $request->input('codigo'),
+         "razon_social" => $request->input('razon_social'),
+         "nombre" => $request->input('nombre'),
+         "pais" => $request->input('pais'),
+         "estado" => $request->input('estado'),
+         "ciudad" => $request->input('ciudad'),
+         "telefono" => $request->input('telefono'),
+         "correo" => $request->input('correo'),
+         "created_at" => Carbon::now(),
+         "updated_at" => Carbon::now(),
+       ]);
+
+       //Realizar consulta
+       $empresarios = DB::table('empresarios')->where('activo', '1')->get();
+       //ARecargar
+       return view('/home', compact('empresarios'));
     }
 
     /**
@@ -58,7 +76,8 @@ class EmpresariosController extends Controller
      */
     public function edit($id)
     {
-        //
+        $empresario = DB::table('empresarios')->where('id', $id)->first();
+        return view('empresarios.edit', compact('empresario'));
     }
 
     /**
@@ -70,7 +89,24 @@ class EmpresariosController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+
+        //Actualizar
+        DB::table('empresarios')->where('id', $id)->update([
+          "codigo" => $request->input('codigo'),
+          "razon_social" => $request->input('razon_social'),
+          "nombre" => $request->input('nombre'),
+          "pais" => $request->input('pais'),
+          "estado" => $request->input('estado'),
+          "ciudad" => $request->input('ciudad'),
+          "telefono" => $request->input('telefono'),
+          "correo" => $request->input('correo'),
+          "updated_at" => Carbon::now(),
+        ]);
+
+        //Realizar consulta
+        $empresarios = DB::table('empresarios')->where('activo', '1')->get();
+        //ARecargar
+        return view('/home', compact('empresarios'));
     }
 
     /**
@@ -81,8 +117,12 @@ class EmpresariosController extends Controller
      */
     public function destroy($id)
     {
+
         DB::table('empresarios')->where('id', $id)->delete();
 
-        return redirect()->route('empresarios.index'); 
+        //Realizar consulta
+        $empresarios = DB::table('empresarios')->where('activo', '1')->get();
+        //recargar pagina
+        return view('/home', compact('empresarios'));
     }
 }
